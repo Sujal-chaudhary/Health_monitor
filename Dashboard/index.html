@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PulseCare | Patient Health Monitoring</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#17243a;--muted:#718096;--line:#e6edf5;--blue:#356df3;--teal:#13b8a6;--orange:#f59e0b;--red:#e45858;--shadow:0 8px 28px rgba(27,54,93,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.shell{max-width:1400px;margin:auto;padding:26px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:25px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#356df3,#13b8a6);display:grid;place-items:center;color:white;font-size:24px;font-weight:800}
+h1{font-size:23px;margin:0;letter-spacing:-.5px}header p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.demo{padding:8px 12px;border-radius:999px;background:#fff4d9;color:#936300;font-weight:700;font-size:12px;border:1px solid #f5df9c}
+button,select{font:inherit;border:1px solid var(--line);background:white;color:var(--ink);border-radius:10px;padding:10px 13px;cursor:pointer}
+button.primary{background:var(--blue);color:white;border-color:var(--blue);font-weight:650}
+button:hover{filter:brightness(.97)}
+.topline{display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px;gap:15px;flex-wrap:wrap}
+.section-title{font-size:16px;font-weight:750}.patient-select{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.metric-head{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;font-weight:650}
+.metric-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:18px;background:#eef3ff;color:var(--blue)}
+.metric-value{font-size:34px;font-weight:800;letter-spacing:-1px;margin:16px 0 2px}.unit{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:0}
+.metric-foot{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}.dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--teal)}
+.status-pill{font-size:11px;font-weight:750;padding:5px 9px;border-radius:999px;background:#e9f9f3;color:#16856e}
+.main-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);gap:16px;margin-top:16px}
+.card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}.card-title h2{font-size:15px;margin:0}.card-title span{font-size:12px;color:var(--muted)}
+.chart-wrap{height:260px;position:relative}canvas{width:100%;height:100%;display:block}
+.legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:8px}.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.patient-info{display:flex;align-items:center;gap:13px;padding:4px 0 16px;border-bottom:1px solid var(--line);margin-bottom:15px}
+.avatar{width:48px;height:48px;border-radius:15px;background:#e9efff;color:#356df3;display:grid;place-items:center;font-size:17px;font-weight:800}
+.patient-info h3{margin:0;font-size:15px}.patient-info p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f3f8;font-size:13px}.info-row:last-child{border:0}.info-row span:first-child{color:var(--muted)}
+.table-card{margin-top:16px}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:540px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #eef2f7;font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}td strong{font-weight:700}.tag{border-radius:7px;padding:4px 8px;font-size:11px;font-weight:750;background:#e9f9f3;color:#16856e}.tag.review{background:#fff3dc;color:#a16c00}
+.notice{margin-top:16px;border:1px solid #f2dca2;background:#fff9e9;color:#775800;border-radius:13px;padding:12px 15px;font-size:12px}
+footer{color:#9aa5b5;text-align:center;font-size:11px;padding:24px 0 8px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.main-grid{grid-template-columns:1fr}}
+@media(max-width:580px){.shell{padding:15px}.cards{grid-template-columns:1fr 1fr;gap:10px}.card{padding:15px}.metric-value{font-size:27px}.header-actions{width:100%}.header-actions button{flex:1}.chart-wrap{height:220px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="brand"><div class="logo">+</div><div><h1>PulseCare</h1><p>Patient Health Monitoring Dashboard</p></div></div>
+  <div class="header-actions"><span class="demo">● DEMO DATA · NOT LIVE</span><button id="refreshBtn" class="primary">↻ Generate demo reading</button></div>
+</header>
+
+<div class="topline">
+  <div class="section-title">Health overview</div>
+  <div class="patient-select">Demo patient <select id="patientSelect"><option value="PT-001">PT-001 · Sample Patient A</option><option value="PT-002">PT-002 · Sample Patient B</option><option value="PT-003">PT-003 · Sample Patient C</option></select></div>
+</div>
+
+<section class="cards">
+  <div class="card"><div class="metric-head">Heart Rate <span class="metric-icon">♡</span></div><div class="metric-value" id="hr">74 <span class="unit">BPM</span></div><div class="metric-foot"><i class="dot"></i> Sample sensor value</div></div>
+  <div class="card"><div class="metric-head">SpO₂ <span class="metric-icon">◉</span></div><div class="metric-value" id="spo2">97 <span class="unit">%</span></div><div class="metric-foot"><i class="dot"></i> Sample sensor value</div></div>
+  <div class="card"><div class="metric-head">Temperature <span class="metric-icon">♨</span></div><div class="metric-value" id="temp">36.8 <span class="unit">°C</span></div><div class="metric-foot"><i class="dot"></i> Sample sensor value</div></div>
+  <div class="card"><div class="metric-head">Device Status <span class="metric-icon">⌁</span></div><div class="metric-value" style="font-size:27px">Demo <span class="unit">mode</span></div><div class="metric-foot"><span class="status-pill">Simulated connection</span></div></div>
+</section>
+
+<section class="main-grid">
+  <div class="card">
+    <div class="card-title"><h2>Recent vital readings</h2><span>Illustrative trend · last 12 samples</span></div>
+    <div class="chart-wrap"><canvas id="chart" aria-label="Sample heart rate and oxygen trend chart"></canvas></div>
+    <div class="legend"><span><i style="background:#356df3"></i>Heart rate (BPM)</span><span><i style="background:#13b8a6"></i>SpO₂ (%)</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><h2>Patient details</h2><span>Fictional record</span></div>
+    <div class="patient-info"><div class="avatar" id="avatar">A</div><div><h3 id="patientName">Sample Patient A</h3><p id="patientId">Patient ID: PT-001</p></div></div>
+    <div class="info-row"><span>Monitoring mode</span><strong>Sample / offline</strong></div>
+    <div class="info-row"><span>Last demo update</span><strong id="updated">Just now</strong></div>
+    <div class="info-row"><span>Latest heart rate</span><strong id="hrSide">74 BPM</strong></div>
+    <div class="info-row"><span>Latest SpO₂</span><strong id="spoSide">97%</strong></div>
+    <div class="info-row"><span>Temperature</span><strong id="tempSide">36.8 °C</strong></div>
+  </div>
+</section>
+
+<section class="card table-card">
+  <div class="card-title"><h2>Recent sample records</h2><span>Generated locally in this browser</span></div>
+  <div class="table-scroll"><table><thead><tr><th>Time</th><th>Heart rate</th><th>SpO₂</th><th>Temperature</th><th>Record status</th></tr></thead><tbody id="records"></tbody></table></div>
+</section>
+
+<div class="notice"><strong>Demonstration disclaimer:</strong> All patient names and readings on this page are synthetic sample data. This dashboard is not connected to your ESP32, does not provide medical advice, and is not a clinically validated monitoring or alert system.</div>
+<footer>PulseCare · HCLTech Career Shaper Project demonstration UI · Static frontend</footer>
+</div>
+<script>
+const patients={
+ "PT-001":{name:"Sample Patient A",initial:"A",hr:74,spo:97,temp:36.8},
+ "PT-002":{name:"Sample Patient B",initial:"B",hr:81,spo:96,temp:36.6},
+ "PT-003":{name:"Sample Patient C",initial:"C",hr:69,spo:98,temp:36.9}
+};
+let current="PT-001", records=[], hrSeries=[], spoSeries=[];
+const $=id=>document.getElementById(id);
+function seed(){
+ const p=patients[current]; records=[];hrSeries=[];spoSeries=[];
+ for(let i=11;i>=0;i--){records.push({time:new Date(Date.now()-i*60000),hr:clamp(p.hr+(Math.random()*12-6),55,105),spo:clamp(p.spo+(Math.random()*2-1),93,100),temp:clamp(p.temp+(Math.random()*.4-.2),35.8,37.8)});}
+ render();
+}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function render(){
+ const p=patients[current], latest=records[records.length-1];
+ $("hr").innerHTML=Math.round(latest.hr)+' <span class="unit">BPM</span>';
+ $("spo2").innerHTML=Math.round(latest.spo)+' <span class="unit">%</span>';
+ $("temp").innerHTML=latest.temp.toFixed(1)+' <span class="unit">°C</span>';
+ $("patientName").textContent=p.name;$("patientId").textContent="Patient ID: "+current;$("avatar").textContent=p.initial;
+ $("hrSide").textContent=Math.round(latest.hr)+" BPM";$("spoSide").textContent=Math.round(latest.spo)+"%";$("tempSide").textContent=latest.temp.toFixed(1)+" °C";
+ $("updated").textContent=new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+ $("records").innerHTML=records.slice(-6).reverse().map(r=>`<tr><td>${r.time.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</td><td><strong>${Math.round(r.hr)} BPM</strong></td><td>${Math.round(r.spo)}%</td><td>${r.temp.toFixed(1)} °C</td><td><span class="tag">Demo record</span></td></tr>`).join("");
+ drawChart();
+}
+function drawChart(){
+ const c=$("chart"),ctx=c.getContext("2d"),rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ c.width=rect.width*dpr;c.height=rect.height*dpr;ctx.scale(dpr,dpr);
+ const w=rect.width,h=rect.height,pad={l:35,r:10,t:15,b:25},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+ ctx.clearRect(0,0,w,h);ctx.font="11px system-ui";ctx.fillStyle="#8a97a8";ctx.strokeStyle="#edf1f6";ctx.lineWidth=1;
+ for(let i=0;i<5;i++){let y=pad.t+ch*i/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(String(110-i*15),2,y+4);}
+ const plot=(key,color,min,max)=>{ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.beginPath();records.forEach((r,i)=>{let x=pad.l+cw*i/(records.length-1),y=pad.t+ch*(1-(r[key]-min)/(max-min));i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();records.forEach((r,i)=>{let x=pad.l+cw*i/(records.length-1),y=pad.t+ch*(1-(r[key]-min)/(max-min));ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()})};
+ plot("hr","#356df3",50,110);
+ // SpO2 is drawn on a separate illustrative normalized scale, with a visible second series.
+ ctx.strokeStyle="#13b8a6";ctx.lineWidth=2;ctx.beginPath();records.forEach((r,i)=>{let x=pad.l+cw*i/(records.length-1),y=pad.t+ch*(1-(r.spo-90)/20);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+}
+$("patientSelect").addEventListener("change",e=>{current=e.target.value;seed()});
+$("refreshBtn").addEventListener("click",()=>{const p=patients[current];records.push({time:new Date(),hr:clamp(p.hr+(Math.random()*16-8),55,110),spo:clamp(p.spo+(Math.random()*2-1),93,100),temp:clamp(p.temp+(Math.random()*.5-.25),35.8,37.8)});if(records.length>18)records.shift();render()});
+window.addEventListener("resize",drawChart);seed();
+</script>
+</body>
+</html>
